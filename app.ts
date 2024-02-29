@@ -5,6 +5,7 @@ import express, { NextFunction } from "express";
 import { corsOptions } from "./config/cors";
 import { StatusCodes } from "http-status-codes";
 import { errorHandlingMiddleware } from "./middlewares/errorHandlingMiddleware";
+import { API_V1 } from "./routers";
 
 export const app = express();
 
@@ -20,7 +21,8 @@ app.use(cookieParser());
 // CORS - Cross-Origin Resource Sharing.
 app.use(cors(corsOptions))
 
-
+// Router API : V1
+app.use('/v1', API_V1)
 
 // Define your GET route handler
 app.get('/api/data', (req, res) => {
