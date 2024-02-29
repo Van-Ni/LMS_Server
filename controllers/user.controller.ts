@@ -1,13 +1,11 @@
 
 import asyncHandler from "express-async-handler";
-import express, { response } from "express";
+import express from "express";
 import ApiError from "../utils/ApiError";
 import { StatusCodes } from "http-status-codes";
 import userModel from "../models/user.model";
 import jwt, { Secret } from "jsonwebtoken";
 import { env } from "../config/enviroment";
-import ejs from "ejs";
-import path from "path";
 import sendMail from "../utils/sendMail";
 interface IRegistrationBody {
     name: string;
@@ -32,8 +30,6 @@ const registrationUser = asyncHandler(async (req: express.Request, res: express.
         user: { name: user.name },
         activationCode: activationToken.activationCode
     }
-
-    // console.log('🚀 ~ registrationUser ~ __dirname:', __dirname)
     // const html = await ejs.renderFile(path.join(__dirname, "../mails/activation-mail.ejs"), data);
 
     try {
@@ -66,6 +62,32 @@ const createActivationToken = (user: IRegistrationBody): IActivationToken => {
     return { token, activationCode };
 }
 
+const activateUser = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.log('🚀 ~ activateUser ~ req.body:', req.body)
+    const { activation_token, activation_code } = req.body;
+
+    // Verify the activation token
+    const { user: newUser, activationCode } = jwt.verify(activation_token, env.ACTIVATION_SECRET as string) as { user: IRegistrationBody; activationCode: string };
+    console.log('🚀 ~ activateUser:', newUser, activationCode)
+
+    if (activationCode !== activation_code) {
+        return next(new ApiError(StatusCodes.BAD_REQUEST, "Invalid activation code"));
+    }
+    const { name, email, password } = newUser;
+
+    const exitUser = await userModel.findOne({ email })
+    if (exitUser) {
+        return next(new ApiError(StatusCodes.BAD_REQUEST, "Email already exists"));
+    }
+    const user = await userModel.create({ name, email, password });
+    res.status(StatusCodes.CREATED).json({
+        success: true,
+        data: user
+    });
+})
+
+
 export const userController = {
-    registrationUser
+    registrationUser,
+    activateUser
 }
