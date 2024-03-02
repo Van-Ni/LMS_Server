@@ -8,6 +8,7 @@ import jwt, { Secret } from "jsonwebtoken";
 import { env } from "../config/enviroment";
 import sendMail from "../utils/sendMail";
 import { resetToken, sendToken } from "../utils/jwt";
+import { redis } from "../utils/redis";
 
 // ==========================
 // Registration User
@@ -76,12 +77,10 @@ const createActivationToken = (user: IRegistrationBody): IActivationToken => {
 // ==========================
 
 const activateUser = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.log('🚀 ~ activateUser ~ req.body:', req.body)
     const { activation_token, activation_code } = req.body;
 
     // Verify the activation token
     const { user: newUser, activationCode } = jwt.verify(activation_token, env.ACTIVATION_SECRET as string) as { user: IRegistrationBody; activationCode: string };
-    console.log('🚀 ~ activateUser:', newUser, activationCode)
 
     if (activationCode !== activation_code) {
         return next(new ApiError(StatusCodes.BAD_REQUEST, "Invalid activation code"));
@@ -134,6 +133,8 @@ export const loginUser = asyncHandler(async (req: express.Request, res: express.
 
 export const logoutUser = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     resetToken(res);
+    console.log('🚀 ~ logoutUser ~ req user:', req?.user)
+    redis.del(req.user?._id);
     res.status(StatusCodes.OK).json({
         success: true,
         message: "Logged out successfully"

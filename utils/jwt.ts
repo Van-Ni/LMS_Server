@@ -13,7 +13,6 @@ interface ITokenExpires {
 
 export const sendToken = ((user: User, statusCode: number, res: Response) => {
     const accessToken = user.signAccessToken();
-    console.log('🚀 ~ sendToken ~ accessToken:', accessToken)
     const refreshToken = user.signRefreshToken();
 
     // upload session to redis
@@ -21,7 +20,7 @@ export const sendToken = ((user: User, statusCode: number, res: Response) => {
     redis.set(user._id, JSON.stringify(user))
 
     // parse environment variables to integrates with fallback values
-    const accessTokenExpires = parseInt(env.ACCESS_TOKEN_EXPIRE || '', 10)
+    const accessTokenExpires = parseInt(env.ACCESS_TOKEN_EXPIRE || "5", 10)
     const refreshTokenExpires = parseInt(env.REFRESH_TOKEN_EXPIRE || '', 10)
 
     // options for cookies
@@ -43,7 +42,7 @@ export const sendToken = ((user: User, statusCode: number, res: Response) => {
     }
 
     res.cookie("access_token", accessToken, accessTokenOptions)
-    res.cookie("resfresh_token", refreshToken, refreshTokenOptions)
+    res.cookie("refresh_token", refreshToken, refreshTokenOptions)
 
     res.status(statusCode).json({
         success: true,
@@ -54,5 +53,5 @@ export const sendToken = ((user: User, statusCode: number, res: Response) => {
 
 export const resetToken = (res: Response) => {
     res.cookie("access_token", "", { maxAge: 1 })
-    res.cookie("resfresh_token", "", { maxAge: 1 })
+    res.cookie("refresh_token", "", { maxAge: 1 })
 }
