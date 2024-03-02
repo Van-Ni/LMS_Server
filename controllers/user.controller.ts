@@ -7,6 +7,11 @@ import userModel from "../models/user.model";
 import jwt, { Secret } from "jsonwebtoken";
 import { env } from "../config/enviroment";
 import sendMail from "../utils/sendMail";
+import { resetToken, sendToken } from "../utils/jwt";
+
+// ==========================
+// Registration User
+// ==========================
 interface IRegistrationBody {
     name: string;
     email: string;
@@ -15,7 +20,7 @@ interface IRegistrationBody {
 }
 
 const registrationUser = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const { name, email, password } = req.body;
+    const { name, email, password } = req.body as IRegistrationBody;
 
     const isEmailExist = await userModel.findOne({ email })
     if (isEmailExist) {
@@ -50,6 +55,10 @@ const registrationUser = asyncHandler(async (req: express.Request, res: express.
     }
 })
 
+// ==========================
+// Create activivation token
+// ==========================
+
 interface IActivationToken {
     token: string;
     activationCode: string;
@@ -61,6 +70,10 @@ const createActivationToken = (user: IRegistrationBody): IActivationToken => {
     const token = jwt.sign({ user, activationCode }, env.ACTIVATION_SECRET as Secret, { expiresIn: "5m" })
     return { token, activationCode };
 }
+
+// ==========================
+// Activate user
+// ==========================
 
 const activateUser = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     console.log('🚀 ~ activateUser ~ req.body:', req.body)
@@ -86,8 +99,49 @@ const activateUser = asyncHandler(async (req: express.Request, res: express.Resp
     });
 })
 
+// ==========================
+// Login User
+// ==========================
+interface ILoginRequest {
+    email: string;
+    password: string;
+}
+export const loginUser = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { email, password } = req.body as ILoginRequest;
 
+    // validate email and password
+    if (!email || !password)
+        return next(new ApiError(StatusCodes.BAD_REQUEST, "Please enter email and password."));
+
+    // check if user is existing
+    const user = await userModel.findOne({ email }).select("password");
+    if (!user)
+        return next(new ApiError(StatusCodes.BAD_REQUEST, "Invalid email and password."));
+
+    // check password validity
+    const isPasswordMatch = await user.comparePassword(password);
+    if (!isPasswordMatch)
+        return next(new ApiError(StatusCodes.BAD_REQUEST, "Invalid email and password."));
+
+    // Send Token and Cookies to the Browser
+    sendToken(user, StatusCodes.OK, res);
+})
+
+
+// ==========================
+// Logout User
+// ==========================
+
+export const logoutUser = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    resetToken(res);
+    res.status(StatusCodes.OK).json({
+        success: true,
+        message: "Logged out successfully"
+    })
+});
 export const userController = {
     registrationUser,
-    activateUser
+    activateUser,
+    loginUser,
+    logoutUser
 }

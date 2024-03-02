@@ -11,6 +11,11 @@ export const env = {
 
     BCRYPT_SALT_ROUNDS: process.env.BCRYPT_SALT_ROUNDS,
     ACTIVATION_SECRET: process.env.ACTIVATION_SECRET,
+    ACCESS_TOKEN: process.env.ACCESS_TOKEN,
+    REFRESH_TOKEN: process.env.REFRESH_TOKEN,
+    ACCESS_TOKEN_EXPIRE: process.env.ACCESS_TOKEN_EXPIRE,
+    REFRESH_TOKEN_EXPIRE: process.env.REFRESH_TOKEN_EXPIRE,
+
 
     SMTP_PASSWORD: process.env.SMTP_PASSWORD,
     SMTP_MAIL: process.env.SMTP_MAIL,

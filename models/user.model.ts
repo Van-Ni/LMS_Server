@@ -1,5 +1,7 @@
 import { Schema, Document, model } from 'mongoose';
 import bcrypt from 'bcryptjs';
+import jwt, { Secret } from 'jsonwebtoken';
+import { env } from '../config/enviroment';
 const emailRegex =
     /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;;
 
@@ -14,7 +16,9 @@ export interface User extends Document {
     role: string;
     isVerified: boolean;
     courses: Array<{ courseId: string }>;
-    comparePassword: (password: string) => Promise<boolean>
+    comparePassword: (password: string) => Promise<boolean>;
+    signAccessToken: () => string;
+    signRefreshToken: () => string;
 }
 
 const userSchema = new Schema<User>({
@@ -60,9 +64,21 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
+userSchema.methods.signAccessToken = function () {
+    const user = this as User;
+    return jwt.sign({ id: user._id }, env.ACCESS_TOKEN as Secret || "")
+}
+
+userSchema.methods.signRefreshToken = function () {
+    const user = this as User;
+    return jwt.sign({ id: user._id }, env.REFRESH_TOKEN as Secret || "")
+}
+
 // compare password
 userSchema.methods.comparePassword = async function (enteredPassword: string): Promise<boolean> {
-    return await bcrypt.compare(enteredPassword, this.password);
+    const user = this as User;
+    console.log('🚀 ~ comparePassword:', enteredPassword, user.password);
+    return await bcrypt.compare(enteredPassword, user.password);
 };
 
 const userModel = model<User>('User', userSchema);
