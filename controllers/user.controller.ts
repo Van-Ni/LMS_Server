@@ -4,11 +4,12 @@ import express from "express";
 import ApiError from "../utils/ApiError";
 import { StatusCodes } from "http-status-codes";
 import userModel from "../models/user.model";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import { env } from "../config/enviroment";
 import sendMail from "../utils/sendMail";
-import { resetToken, sendToken } from "../utils/jwt";
+import { accessTokenOptions, refreshTokenOptions, resetToken, sendToken } from "../utils/jwt";
 import { redis } from "../utils/redis";
+import { getUserById } from "../services/user.service";
 
 // ==========================
 // Registration User
@@ -139,9 +140,73 @@ export const logoutUser = asyncHandler(async (req: express.Request, res: express
         message: "Logged out successfully"
     })
 });
+
+// ==========================
+// Update access token
+// ==========================
+export const updateAccessToken = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const refresh_token = req.cookies.refresh_token as string;
+    const decoded = jwt.verify(refresh_token, env.REFRESH_TOKEN as Secret) as JwtPayload;
+
+    const message = "Cloud not refresh token.";
+    if (!decoded)
+        return next(new ApiError(StatusCodes.BAD_REQUEST, message));
+
+    const session = await redis.get(decoded.id as string);
+    if (!session)
+        return next(new ApiError(StatusCodes.BAD_REQUEST, message));
+
+    const user = JSON.parse(session);
+
+    const accessToken = jwt.sign({ id: user._id }, env.ACCESS_TOKEN as Secret || "", {
+        expiresIn: "5m"
+    })
+    const refreshToken = jwt.sign({ id: user._id }, env.REFRESH_TOKEN as Secret || "", {
+        expiresIn: "3d"
+    })
+
+    res.cookie("access_token", accessToken, accessTokenOptions)
+    res.cookie("refresh_token", refreshToken, refreshTokenOptions)
+
+    res.status(StatusCodes.OK).json({
+        success: true,
+        accessToken
+    })
+});
+
+// ==========================
+// Get user information
+// ==========================
+const getUserInfo = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const userId = req.user?._id;
+    getUserById(userId, res);
+})
+
+// ==========================
+// Social Auth
+// ==========================
+interface ISocialAuthBody {
+    email: string;
+    name: string;
+    avatar?: string;
+}
+
+const socialAuth = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { email, name, avatar } = req.body as ISocialAuthBody;
+    const user = await userModel.findOne({ email });
+    if (!user) {
+        const newUser = await userModel.create({ email, name, avatar })
+        sendToken(newUser, StatusCodes.CREATED, res);
+    } else {
+        sendToken(user, StatusCodes.CREATED, res);
+    }
+})
 export const userController = {
     registrationUser,
     activateUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    updateAccessToken,
+    getUserInfo,
+    socialAuth
 }

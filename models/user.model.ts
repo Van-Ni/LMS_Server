@@ -34,7 +34,7 @@ const userSchema = new Schema<User>({
     },
     password: {
         type: String,
-        required: [true, "Please enter your password"],
+        // required: [true, "Please enter your password"],
         minlength: [6, "Please enter at least 6 characters"],
         select: false
     }, // Store hashed password (omitted)
@@ -66,12 +66,16 @@ userSchema.pre('save', async function (next) {
 
 userSchema.methods.signAccessToken = function () {
     const user = this as User;
-    return jwt.sign({ id: user._id }, env.ACCESS_TOKEN as Secret || "")
+    return jwt.sign({ id: user._id }, env.ACCESS_TOKEN as Secret || "", {
+        expiresIn: "5m"
+    })
 }
 
 userSchema.methods.signRefreshToken = function () {
     const user = this as User;
-    return jwt.sign({ id: user._id }, env.REFRESH_TOKEN as Secret || "")
+    return jwt.sign({ id: user._id }, env.REFRESH_TOKEN as Secret || "", {
+        expiresIn: "3d"
+    })
 }
 
 // compare password

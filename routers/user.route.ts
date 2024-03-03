@@ -10,7 +10,10 @@ const Router = express.Router();
 Router.post("/registration", userController.registrationUser)
 Router.post("/activate-user", userController.activateUser)
 Router.post("/login", userController.loginUser)
-Router.post("/logout", isAuthenticated, authorziteRoles("admin"), userController.logoutUser)
+Router.get("/logout", isAuthenticated, authorziteRoles("user"), userController.logoutUser)
+Router.get("/refresh", userController.updateAccessToken)
+Router.get("/me", isAuthenticated, userController.getUserInfo)
+Router.post("/socialAuth", userController.socialAuth)
 
 
 export const userRoute = Router;
