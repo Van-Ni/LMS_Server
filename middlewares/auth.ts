@@ -19,7 +19,7 @@ declare global {
 }
 
 export const isAuthenticated = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    
+
     const access_token = req.cookies.access_token as string;
     console.log('🚀 ~ isAuthenticated ~ req.cookies:', req.cookies)
 
@@ -37,3 +37,13 @@ export const isAuthenticated = asyncHandler(async (req: Request, res: Response, 
     req.user = JSON.parse(user); // field password
     next();
 })
+
+export const authorziteRoles = (...roles: string[]) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        console.log('🚀 ~ authorziteRoles ~ roles:', req.user)
+        if (!roles.includes(req.user?.role || "")) {
+            return next(new ApiError(StatusCodes.FORBIDDEN, `Role: ${req.user?.role} is not allowed to access to this resource.`));
+        }
+        next();
+    }
+}

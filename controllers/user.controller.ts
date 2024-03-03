@@ -113,7 +113,7 @@ export const loginUser = asyncHandler(async (req: express.Request, res: express.
         return next(new ApiError(StatusCodes.BAD_REQUEST, "Please enter email and password."));
 
     // check if user is existing
-    const user = await userModel.findOne({ email }).select("password");
+    const user = await userModel.findOne({ email }).select("+password");
     if (!user)
         return next(new ApiError(StatusCodes.BAD_REQUEST, "Invalid email and password."));
 
@@ -133,7 +133,6 @@ export const loginUser = asyncHandler(async (req: express.Request, res: express.
 
 export const logoutUser = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     resetToken(res);
-    console.log('🚀 ~ logoutUser ~ req user:', req?.user)
     redis.del(req.user?._id);
     res.status(StatusCodes.OK).json({
         success: true,
