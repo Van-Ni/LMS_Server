@@ -6,11 +6,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "cross-env BUILD_MODE=dev tsnd --respawn server.ts",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "swagger-autogen": "node swagger.ts"
   },
   "author": "vannidev",
   "license": "ISC",
   "dependencies": {
+    "and": "^0.0.3",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
@@ -25,6 +27,8 @@
     "jsonwebtoken": "^9.0.1",
     "mongoose": "^7.3.1",
     "nodemailer": "^6.9.7",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.0",
     "typescript": "^5.1.6"
   },
   "devDependencies": {
@@ -36,6 +40,7 @@
     "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "^20.4.0",
     "@types/nodemailer": "^6.4.14",
+    "@types/swagger-ui-express": "^4.1.6",
     "@typescript-eslint/eslint-plugin": "^7.1.0",
     "@typescript-eslint/parser": "^7.1.0",
     "eslint": "^8.56.0",

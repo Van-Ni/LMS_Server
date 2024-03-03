@@ -6,6 +6,9 @@ import { corsOptions } from "./config/cors";
 import { StatusCodes } from "http-status-codes";
 import { errorHandlingMiddleware } from "./middlewares/errorHandlingMiddleware";
 import { API_V1 } from "./routers";
+import swaggerUi from 'swagger-ui-express';
+// const swaggerFile = require('./swagger_output.json')
+import swaggerFile from "./swagger_output.json"; // resolveJsonModule tsconfig.json
 
 export const app = express();
 
@@ -23,6 +26,8 @@ app.use(cors(corsOptions))
 
 // Router API : V1
 app.use('/v1', API_V1)
+
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 // Define your GET route handler
 app.get('/api/data', (req, res) => {
