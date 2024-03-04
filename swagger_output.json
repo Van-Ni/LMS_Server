@@ -1,123 +1,157 @@
 {
-  "openapi": "3.0.0",
+  "swagger": "2.0",
   "info": {
     "title": "Blog API Documentation",
-    "description": "RESTful API for managing a blog system",
+    "description": "",
     "version": "1.0.0"
   },
-  "servers": [
-    {
-      "url": "http://localhost:8080"
-    }
+  "host": "localhost:8080",
+  "basePath": "/",
+  "schemes": [
+    "http",
+    "https"
   ],
   "paths": {
     "/api/user/registration": {
       "post": {
-        "summary": "Register a new user",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "example": "John Doe"
-                  },
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "example": "john.doe@example.com"
-                  },
-                  "password": {
-                    "type": "string",
-                    "format": "password",
-                    "example": "password123"
-                  }
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "example": "any"
                 },
-                "required": ["name", "email", "password"]
+                "email": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                }
               }
             }
           }
-        },
+        ],
         "responses": {
-          "200": {
-            "description": "User registered successfully"
+          "default": {
+            "description": ""
           }
         }
       }
     },
     "/api/user/activate-user": {
       "post": {
-        "summary": "Activate user account",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "activation_token": {
-                    "type": "string",
-                    "example": "token123"
-                  },
-                  "activation_code": {
-                    "type": "string",
-                    "example": "code456"
-                  }
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "activation_token": {
+                  "example": "any"
                 },
-                "required": ["activation_token", "activation_code"]
+                "activation_code": {
+                  "example": "any"
+                }
               }
             }
           }
-        },
+        ],
         "responses": {
-          "200": {
-            "description": "User account activated successfully"
+          "default": {
+            "description": ""
           }
         }
       }
     },
     "/api/user/login": {
       "post": {
-        "summary": "Login to the system",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "example": "john.doe@example.com"
-                  },
-                  "password": {
-                    "type": "string",
-                    "format": "password",
-                    "example": "password123"
-                  }
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
                 },
-                "required": ["email", "password"]
+                "password": {
+                  "example": "any"
+                }
               }
             }
           }
-        },
+        ],
         "responses": {
-          "200": {
-            "description": "User logged in successfully"
+          "default": {
+            "description": ""
           }
         }
       }
     },
     "/api/user/logout": {
-      "post": {
-        "summary": "Logout from the system",
+      "get": {
+        "description": "",
         "responses": {
-          "200": {
-            "description": "User logged out successfully"
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/user/refresh": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/user/me": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/user/socialAuth": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                },
+                "avatar": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
           }
         }
       }

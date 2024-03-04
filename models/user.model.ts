@@ -51,7 +51,10 @@ const userSchema = new Schema<User>({
     ],
 }, { timestamps: true });
 
+// ====================================
 // Hash password before saving the user
+// ====================================
+
 userSchema.pre('save', async function (next) {
     const user = this as User; // Implicitly cast to User type
 
@@ -64,12 +67,20 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
+// ====================================
+// Sign Access Token
+// ====================================
+
 userSchema.methods.signAccessToken = function () {
     const user = this as User;
     return jwt.sign({ id: user._id }, env.ACCESS_TOKEN as Secret || "", {
         expiresIn: "5m"
     })
 }
+
+// ====================================
+// Sign Refresh Token
+// ====================================
 
 userSchema.methods.signRefreshToken = function () {
     const user = this as User;
@@ -78,7 +89,10 @@ userSchema.methods.signRefreshToken = function () {
     })
 }
 
-// compare password
+// ====================================
+// Compare Password
+// ====================================
+
 userSchema.methods.comparePassword = async function (enteredPassword: string): Promise<boolean> {
     const user = this as User;
         return await bcrypt.compare(enteredPassword, user.password);

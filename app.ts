@@ -9,6 +9,15 @@ import { API_V1 } from "./routers";
 import swaggerUi from 'swagger-ui-express';
 // const swaggerFile = require('./swagger_output.json')
 import swaggerFile from "./swagger_output.json"; // resolveJsonModule tsconfig.json
+import { v2 as cloudinary } from 'cloudinary';
+import { env } from "./config/enviroment";
+
+// Set Up Your Work Environment
+cloudinary.config({
+    cloud_name: env.CLOUDINARY_CLOUD_NAME,
+    api_key: env.CLOUDINARY_API_KEY,
+    api_secret: env.CLOUDINARY_API_SECRET
+});
 
 export const app = express();
 

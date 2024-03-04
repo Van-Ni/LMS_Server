@@ -29,7 +29,9 @@
     "nodemailer": "^6.9.7",
     "swagger-autogen": "^2.23.7",
     "swagger-ui-express": "^5.0.0",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "cloudinary": "^1.41.0",
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
@@ -44,6 +46,7 @@
     "@typescript-eslint/eslint-plugin": "^7.1.0",
     "@typescript-eslint/parser": "^7.1.0",
     "eslint": "^8.56.0",
-    "ts-node-dev": "^2.0.0"
+    "ts-node-dev": "^2.0.0",
+    "@types/multer": "^1.4.11"
   }
 }

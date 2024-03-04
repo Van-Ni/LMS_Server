@@ -1,6 +1,6 @@
 
 import asyncHandler from "express-async-handler";
-import express from "express";
+import express, { response } from "express";
 import ApiError from "../utils/ApiError";
 import { StatusCodes } from "http-status-codes";
 import userModel from "../models/user.model";
@@ -10,6 +10,7 @@ import sendMail from "../utils/sendMail";
 import { accessTokenOptions, refreshTokenOptions, resetToken, sendToken } from "../utils/jwt";
 import { redis } from "../utils/redis";
 import { getUserById } from "../services/user.service";
+import cloudinary from "cloudinary";
 
 // ==========================
 // Registration User
@@ -158,6 +159,8 @@ export const updateAccessToken = asyncHandler(async (req: express.Request, res: 
 
     const user = JSON.parse(session);
 
+    req.user = user;
+
     const accessToken = jwt.sign({ id: user._id }, env.ACCESS_TOKEN as Secret || "", {
         expiresIn: "5m"
     })
@@ -201,6 +204,131 @@ const socialAuth = asyncHandler(async (req: express.Request, res: express.Respon
         sendToken(user, StatusCodes.CREATED, res);
     }
 })
+
+// ==========================
+// Update User Info
+// ==========================
+interface IUpdateInfo {
+    name?: string;
+    email?: string;
+}
+const updateUserInfo = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { name, email } = req.body as IUpdateInfo;
+
+    const userId = req.user?._id;
+    const user = await userModel.findById(userId);
+
+    if (!user)
+        return next(new ApiError(StatusCodes.NOT_FOUND, "User not found"));
+
+    if (email && user) {
+        const isEmailExist = await userModel.findOne({ email });
+        if (isEmailExist)
+            return next(new ApiError(StatusCodes.BAD_REQUEST, "Email already exists"));
+        user.email = email;
+    }
+
+    if (name && user)
+        user.name = name;
+
+    await user?.save();
+
+    await redis.set(userId, JSON.stringify(user));
+
+    res.status(StatusCodes.CREATED).json({
+        success: true,
+        user
+    })
+})
+
+// ==========================
+// Update User Password
+// ==========================
+
+interface IUpdatePassword {
+    oldPassword: string;
+    newPassword: string;
+}
+const updatePassword = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { oldPassword, newPassword } = req.body as IUpdatePassword;
+
+    if (!oldPassword || !newPassword)
+        return next(new ApiError(StatusCodes.BAD_REQUEST, "Please enter old or new password"));
+
+    const user = await userModel.findById(req.user?._id).select("+password");
+
+    if (user?.password === undefined)
+        return next(new ApiError(StatusCodes.BAD_REQUEST, "Invalid user"));
+
+    const isPasswordMatch = await user.comparePassword(oldPassword);
+
+    if (!isPasswordMatch)
+        return next(new ApiError(StatusCodes.BAD_REQUEST, "Invalid old password"));
+
+    user.password = newPassword;
+
+    await user.save();
+    await redis.set(user._id, JSON.stringify(user));
+
+    res.status(StatusCodes.OK).json({
+        success: true,
+        data: user
+    })
+
+});
+
+
+// ==========================
+// Update Profile Picture
+// ==========================
+interface IUpdateProfilePicture {
+}
+const updateProfilePicture = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const imageFile = req.file as Express.Multer.File;
+    const userId = req.user?._id;
+    const user = await userModel.findById(userId);
+
+    if (imageFile && user) {
+        // delete old avatar
+        if (user.avatar.public_id) {
+            await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+        }
+        // upload new image
+        const avatarUrl = await uploadImage(imageFile) as { public_id: string; secure_url: string };
+        if (!avatarUrl) {
+            return next(new ApiError(StatusCodes.BAD_REQUEST, "Invalid old password"));
+        } else {
+            user.avatar = {
+                public_id: avatarUrl.public_id,
+                url: avatarUrl.secure_url
+            };
+        }
+    }
+
+    await user?.save();
+    await redis.set(userId, JSON.stringify(user))
+
+    res.status(StatusCodes.OK).json({
+        success: true,
+        data: user
+    })
+});
+
+async function uploadImage(imageFile: Express.Multer.File): Promise<{ public_id: string; secure_url: string } | null> {
+    if (!imageFile) {
+        return null; // Return null if no image is uploaded
+    }
+    const b64 = Buffer.from(imageFile.buffer).toString("base64");
+    let dataURI = "data:" + imageFile.mimetype + ";base64," + b64;
+
+    try {
+        const res = await cloudinary.v2.uploader.upload(dataURI, { folder: "LMS/avatars" });
+        return { public_id: res.public_id, secure_url: res.secure_url };
+    } catch (error) {
+        console.error("Error uploading image:", error);
+        return null; // Return null on upload error
+    }
+}
 export const userController = {
     registrationUser,
     activateUser,
@@ -208,5 +336,8 @@ export const userController = {
     logoutUser,
     updateAccessToken,
     getUserInfo,
-    socialAuth
+    socialAuth,
+    updateUserInfo,
+    updatePassword,
+    updateProfilePicture
 }

@@ -18,7 +18,7 @@ const refreshTokenExpires = parseInt(env.REFRESH_TOKEN_EXPIRE || '', 10)
 
 // options for cookies
 export const accessTokenOptions: ITokenExpires = {
-    expires: new Date(Date.now() + accessTokenExpires * 24 * 60 * 60 * 1000), // 5h
+    expires: new Date(Date.now() + accessTokenExpires * 60 * 60 * 1000), // 5h
     maxAge: accessTokenExpires * 60 * 60 * 1000,
     httpOnly: true,
     sameSite: 'lax',
