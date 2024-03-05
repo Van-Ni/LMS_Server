@@ -1,9 +1,9 @@
 import asyncHandler from "express-async-handler";
-import express, { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import { deleteImage, uploadImage } from "../utils/image";
 import ApiError from "../utils/ApiError";
 import { StatusCodes } from "http-status-codes";
-import { createCourseService, getAllCoursesService, getSingleCourseService, updateCourseService } from "../services/course.service";
+import { createCourseService, getAllCoursesService, getCourseByUserService, getSingleCourseService, updateCourseService } from "../services/course.service";
 
 // #postman : How to add nested arrays and objects in the postman body via form-data
 // https://usamaadev.hashnode.dev/how-to-add-nested-arrays-and-objects-in-the-postman-body-via-form-data
@@ -76,9 +76,26 @@ const getSingleCourse = asyncHandler(async (req: Request, res: Response, next: N
 const getAllCourses = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     await getAllCoursesService(res, next);
 });
+
+// =========================
+// Get course contents --only for valid user
+// =========================
+const getCourseByUser = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const userCourseList = req.user?.courses;
+    const courseId = req.params.id;
+
+    const courseExists = userCourseList?.find(c => c.courseId.toString() === courseId)
+
+    if (!courseExists)
+        return next(new ApiError(StatusCodes.NOT_FOUND, "You are not eligible to access this course"));
+
+    await getCourseByUserService(courseId, res, next);
+
+});
 export const courseController = {
     uploadCourse,
     editCourse,
     getSingleCourse,
-    getAllCourses
+    getAllCourses,
+    getCourseByUser
 }

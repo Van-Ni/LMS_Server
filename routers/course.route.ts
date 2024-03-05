@@ -15,6 +15,7 @@ Router.route('/:id')
     .put(isAuthenticated, authorziteRoles("admin"), upload.single("image"), courseController.editCourse)
     .get(courseController.getSingleCourse)
 
+Router.get("/get-course-content/:id", isAuthenticated, courseController.getCourseByUser)
 
 
 export const courseRoute = Router;
