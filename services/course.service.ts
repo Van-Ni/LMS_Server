@@ -77,3 +77,25 @@ export const getAllCoursesService = async (res: Response, next: NextFunction) =>
         return next(new ApiError(StatusCodes.BAD_REQUEST, error.message));
     }
 };
+
+export const getCourseByUserService = async (id: string, res: Response, next: NextFunction) => {
+    try {
+        let course = null;
+        const isCacheExist = await redis.get(id as string);
+        if (isCacheExist) {
+            course = JSON.parse(isCacheExist);
+        } else {
+            course = await CourseModel.findById(id)
+            await redis.set(id as string, JSON.stringify(course))
+            if (!course) {
+                return res.status(StatusCodes.NOT_FOUND).json({ success: false, message: 'Course not found' });
+            }
+        }
+        res.status(StatusCodes.CREATED).json({
+            success: true,
+            data: course.courseData
+        })
+    } catch (error: any) {
+        return next(new ApiError(StatusCodes.BAD_REQUEST, error.message));
+    }
+}
