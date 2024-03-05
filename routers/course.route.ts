@@ -9,9 +9,11 @@ const Router = express.Router();
 
 Router.route('/')
     .post(isAuthenticated, authorziteRoles("admin"), upload.single("image"), courseController.uploadCourse)
+    .get(courseController.getAllCourses)
 
 Router.route('/:id')
     .put(isAuthenticated, authorziteRoles("admin"), upload.single("image"), courseController.editCourse)
+    .get(courseController.getSingleCourse)
 
 
 
