@@ -1,21 +1,13 @@
 import express from "express";
 import { userController } from "../controllers/user.controller";
 import { authorziteRoles, isAuthenticated } from "../middlewares/auth";
-import multer from "multer";
+import { upload } from "../utils/image";
 
 
 
 const Router = express.Router();
 
-//lưu trữ trong bộ nhớ thay vì được ghi vào đĩa
-const storage = multer.memoryStorage();
-//Giới hạn kích thước tệp tối đa là 5MB.
-const upload = multer({
-    storage: storage,
-    limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB
-    },
-});
+
 
 Router.post("/registration", userController.registrationUser)
 Router.post("/activate-user", userController.activateUser)

@@ -10,7 +10,7 @@ import sendMail from "../utils/sendMail";
 import { accessTokenOptions, refreshTokenOptions, resetToken, sendToken } from "../utils/jwt";
 import { redis } from "../utils/redis";
 import { getUserById } from "../services/user.service";
-import cloudinary from "cloudinary";
+import { deleteImage, uploadImage } from "../utils/image";
 
 // ==========================
 // Registration User
@@ -281,8 +281,6 @@ const updatePassword = asyncHandler(async (req: express.Request, res: express.Re
 // ==========================
 // Update Profile Picture
 // ==========================
-interface IUpdateProfilePicture {
-}
 const updateProfilePicture = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const imageFile = req.file as Express.Multer.File;
     const userId = req.user?._id;
@@ -291,12 +289,12 @@ const updateProfilePicture = asyncHandler(async (req: express.Request, res: expr
     if (imageFile && user) {
         // delete old avatar
         if (user.avatar.public_id) {
-            await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+            await deleteImage(user.avatar.public_id);
         }
         // upload new image
-        const avatarUrl = await uploadImage(imageFile) as { public_id: string; secure_url: string };
+        const avatarUrl = await uploadImage(imageFile, "avatars") as { public_id: string; secure_url: string };
         if (!avatarUrl) {
-            return next(new ApiError(StatusCodes.BAD_REQUEST, "Invalid old password"));
+            return next(new ApiError(StatusCodes.BAD_REQUEST, "Error uploading image"));
         } else {
             user.avatar = {
                 public_id: avatarUrl.public_id,
@@ -314,21 +312,7 @@ const updateProfilePicture = asyncHandler(async (req: express.Request, res: expr
     })
 });
 
-async function uploadImage(imageFile: Express.Multer.File): Promise<{ public_id: string; secure_url: string } | null> {
-    if (!imageFile) {
-        return null; // Return null if no image is uploaded
-    }
-    const b64 = Buffer.from(imageFile.buffer).toString("base64");
-    let dataURI = "data:" + imageFile.mimetype + ";base64," + b64;
 
-    try {
-        const res = await cloudinary.v2.uploader.upload(dataURI, { folder: "LMS/avatars" });
-        return { public_id: res.public_id, secure_url: res.secure_url };
-    } catch (error) {
-        console.error("Error uploading image:", error);
-        return null; // Return null on upload error
-    }
-}
 export const userController = {
     registrationUser,
     activateUser,

@@ -17,7 +17,7 @@ export interface ICourseData extends Document {
 
 export const courseDataScheme = new Schema<ICourseData>({
     videoUrl: String,
-    videoThumbnail: Object,
+    // videoThumbnail: Object,
     title: String,
     videoSection: String,
     description: String,
