@@ -3,6 +3,7 @@ import { authorziteRoles, isAuthenticated } from "../middlewares/auth";
 import { upload } from "../utils/image";
 import { courseController } from "../controllers/course.controller";
 import { questionController } from "../controllers/question.controller";
+import { reviewController } from "../controllers/review.controller";
 
 
 
@@ -17,8 +18,10 @@ Router.route('/:id')
     .get(courseController.getSingleCourse)
 
 Router.get("/get-course-content/:id", isAuthenticated, courseController.getCourseByUser)
-Router.post("/add-question", isAuthenticated, questionController.addQuestion)
-Router.post("/add-answer", isAuthenticated, questionController.addAnswer)
+Router.put("/add-question", isAuthenticated, questionController.addQuestion)
+Router.put("/add-answer", isAuthenticated, questionController.addAnswer)
+Router.put("/add-review/:id", isAuthenticated, reviewController.addReview)
+Router.put("/add-reply/:id", isAuthenticated, authorziteRoles("admin"), reviewController.addReplyToReview)
 
 
 

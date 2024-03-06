@@ -18,6 +18,8 @@ export const createCourseService = async (data: any, res: Response, next: NextFu
 };
 export const updateCourseService = async (id: String, data: any, res: Response, next: NextFunction) => {
     try {
+        console.log("hello");
+        
         const course = await CourseModel.findByIdAndUpdate(id, { $set: data }, { $new: true, $returnDocument: "after" });
         if (!course) {
             return res.status(StatusCodes.NOT_FOUND).json({ success: false, message: 'Course not found' });
