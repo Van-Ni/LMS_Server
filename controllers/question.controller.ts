@@ -24,12 +24,12 @@ const addQuestion = asyncHandler(async (req: Request, res: Response, next: NextF
     const course = await CourseModel.findById(courseId);
 
     if (!mongoose.Types.ObjectId.isValid(contentId))
-        return next(new ApiError(StatusCodes.BAD_REQUEST, "Invalid content id"));
+        return next(new ApiError(StatusCodes.NOT_FOUND, "Invalid content id"));
 
     const courseContent = course?.courseData.find((item: ICourseData) => item._id.equals(contentId));
 
     if (!courseContent)
-        return next(new ApiError(StatusCodes.BAD_REQUEST, "Invalid content id"));
+        return next(new ApiError(StatusCodes.NOT_FOUND, "Invalid content id"));
 
     const newQuestion = {
         user: req.user ? req.user : {},
@@ -67,19 +67,19 @@ const addAnswer = asyncHandler(async (req: Request, res: Response, next: NextFun
     const course = await CourseModel.findById(courseId);
 
     if (!mongoose.Types.ObjectId.isValid(contentId))
-        return next(new ApiError(StatusCodes.BAD_REQUEST, "Invalid content id"));
+        return next(new ApiError(StatusCodes.NOT_FOUND, "Invalid content id"));
 
     // find courseData
     const courseContent = course?.courseData.find((item: ICourseData) => item._id.equals(contentId));
 
     if (!courseContent)
-        return next(new ApiError(StatusCodes.BAD_REQUEST, "Invalid content id"));
+        return next(new ApiError(StatusCodes.NOT_FOUND, "Invalid content id"));
 
     // find question
     const question = courseContent.questions.find((item: IComment) => item._id.equals(questionId));
 
     if (!question)
-        return next(new ApiError(StatusCodes.BAD_REQUEST, "Invalid question id"));
+        return next(new ApiError(StatusCodes.NOT_FOUND, "Invalid question id"));
 
     // add answer
     const newAnswer = {
