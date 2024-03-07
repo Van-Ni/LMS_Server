@@ -20,7 +20,11 @@ const notificationSchema = new Schema<INotification>({
         type: String,
         required: true,
         default: "unread"
-    }
+    },
+    userId: {
+        type: String,
+        required: true,
+    },
 }, { timestamps: true })
 
 const notificationModel = model<INotification>('notification', notificationSchema);
