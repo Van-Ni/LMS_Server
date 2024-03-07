@@ -18,7 +18,7 @@ const orderSchema = new Schema<IOrder>({
     payment_info: {
         type: Object
     }
-})
+}, {timestamps: true})
 
 const orderModel = model<IOrder>('Order', orderSchema);
 

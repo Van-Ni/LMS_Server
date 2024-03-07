@@ -18,7 +18,7 @@ Router.get("/me", isAuthenticated, userController.getUserInfo)
 Router.post("/socialAuth", userController.socialAuth)
 Router.put("/update-user-info", isAuthenticated, userController.updateUserInfo)
 Router.put("/update-user-password", isAuthenticated, userController.updatePassword)
-Router.put("/update-user-avatar", isAuthenticated, upload.single("image") ,userController.updateProfilePicture)
-
+Router.put("/update-user-avatar", isAuthenticated, upload.single("image"), userController.updateProfilePicture)
+Router.get("/all-users", isAuthenticated, authorziteRoles("admin"), userController.getAllUsers)
 
 export const userRoute = Router;
