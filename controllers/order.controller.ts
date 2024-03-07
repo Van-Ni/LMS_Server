@@ -79,6 +79,16 @@ const createOrder = asyncHandler(async (req: Request, res: Response, next: NextF
 
 });
 
+const getAllOrders = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const orders = await orderModel.find().sort({ createdAt: -1 });
+
+    res.status(StatusCodes.OK).json({
+        success: true,
+        orders
+    })
+});
+
 export const orderController = {
-    createOrder
+    createOrder,
+    getAllOrders
 }

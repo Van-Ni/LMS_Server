@@ -92,6 +92,12 @@ const getCourseByUser = asyncHandler(async (req: Request, res: Response, next: N
     await getCourseByUserService(courseId, res, next);
 
 });
+
+// =========================
+// Get all courses -- admin
+// =========================
+
+
 export const courseController = {
     uploadCourse,
     editCourse,

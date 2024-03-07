@@ -312,6 +312,17 @@ const updateProfilePicture = asyncHandler(async (req: express.Request, res: expr
     })
 });
 
+// ==========================
+// Update Profile Picture -- admin
+// ==========================
+const getAllUsers = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const users = await userModel.find().sort({ createdAt: -1 });
+
+    res.status(StatusCodes.OK).json({
+        success: true,
+        users
+    })
+});
 
 export const userController = {
     registrationUser,
@@ -323,5 +334,6 @@ export const userController = {
     socialAuth,
     updateUserInfo,
     updatePassword,
-    updateProfilePicture
+    updateProfilePicture,
+    getAllUsers
 }
