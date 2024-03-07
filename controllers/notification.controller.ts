@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import notificationModel from "../models/notification.model";
 import { StatusCodes } from "http-status-codes";
 import ApiError from "../utils/ApiError";
+import cron from "node-cron";
 
 // ==============================
 // Get Notification -- admin 
@@ -40,6 +41,25 @@ const updateNotification = asyncHandler(async (req: Request, res: Response, next
     res.status(StatusCodes.OK).json({ success: true, notifications: updatedNotifications });
 
 });
+
+// =================================
+// delete read notification at 00:00:00
+// =================================
+cron.schedule('0 0 0 * * *', async () => {
+    try {
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const result = await notificationModel.deleteMany({ status: "read", createdAt: { $lt: thirtyDaysAgo } });
+
+        if (result.deletedCount > 0) {
+            console.log(`Deleted ${result.deletedCount} notifications older than 30 days.`);
+        } else {
+            console.log('No notifications older than 30 days found.');
+        }
+    } catch (error) {
+        console.error('Error occurred while deleting notifications:', error);
+    }
+});
+
 export const notificationController = {
     getNotifications,
     updateNotification
