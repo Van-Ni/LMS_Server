@@ -10,7 +10,7 @@ export const createCourseService = async (data: any, res: Response, next: NextFu
 
         res.status(StatusCodes.CREATED).json({
             success: true,
-            data: course
+            course
         })
     } catch (error: any) {
         return next(new ApiError(StatusCodes.BAD_REQUEST, error.message));
@@ -26,7 +26,7 @@ export const updateCourseService = async (id: String, data: any, res: Response, 
         }
         res.status(StatusCodes.CREATED).json({
             success: true,
-            data: course
+            course
         })
     } catch (error: any) {
         return next(new ApiError(StatusCodes.BAD_REQUEST, "Error update course"));
@@ -52,7 +52,7 @@ export const getSingleCourseService = async (id: String, res: Response, next: Ne
         }
         res.status(StatusCodes.CREATED).json({
             success: true,
-            data: course
+            course
         })
     } catch (error: any) {
         return next(new ApiError(StatusCodes.BAD_REQUEST, error.message));
@@ -73,7 +73,7 @@ export const getAllCoursesService = async (res: Response, next: NextFunction) =>
         }
         res.status(StatusCodes.CREATED).json({
             success: true,
-            data: courses
+            courses
         })
     } catch (error: any) {
         return next(new ApiError(StatusCodes.BAD_REQUEST, error.message));
@@ -95,7 +95,7 @@ export const getCourseByUserService = async (id: string, res: Response, next: Ne
         }
         res.status(StatusCodes.CREATED).json({
             success: true,
-            data: course.courseData
+            course: course.courseData
         })
     } catch (error: any) {
         return next(new ApiError(StatusCodes.BAD_REQUEST, error.message));

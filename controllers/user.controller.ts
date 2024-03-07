@@ -96,7 +96,7 @@ const activateUser = asyncHandler(async (req: express.Request, res: express.Resp
     const user = await userModel.create({ name, email, password });
     res.status(StatusCodes.CREATED).json({
         success: true,
-        data: user
+        user
     });
 })
 
@@ -272,7 +272,7 @@ const updatePassword = asyncHandler(async (req: express.Request, res: express.Re
 
     res.status(StatusCodes.OK).json({
         success: true,
-        data: user
+        user
     })
 
 });
@@ -308,7 +308,7 @@ const updateProfilePicture = asyncHandler(async (req: express.Request, res: expr
 
     res.status(StatusCodes.OK).json({
         success: true,
-        data: user
+        user
     })
 });
 

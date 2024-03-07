@@ -57,7 +57,7 @@ const addReview = asyncHandler(async (req: Request, res: Response, next: NextFun
 
     res.status(StatusCodes.OK).json({
         success: true,
-        data: course
+        course
     })
 });
 
@@ -92,7 +92,7 @@ const addReplyToReview = asyncHandler(async (req: Request, res: Response, next: 
 
     res.status(StatusCodes.OK).json({
         success: true,
-        data: course
+        course
     })
 });
 

@@ -7,6 +7,7 @@ import { StatusCodes } from "http-status-codes";
 import { ICourseData } from "../models/courseData.model";
 import { IComment } from "../models/comment.model";
 import sendMail from "../utils/sendMail";
+import notificationModel from "../models/notification.model";
 
 
 // =========================
@@ -39,12 +40,18 @@ const addQuestion = asyncHandler(async (req: Request, res: Response, next: NextF
 
     courseContent.questions.push(newQuestion as IComment);
 
+    // create notification
+    await notificationModel.create({
+        userId: req.user?._id,
+        title: "New question received",
+        message: `You have new question in ${courseContent?.title}`
+    });
 
     await course?.save();
 
     res.status(StatusCodes.OK).json({
         success: true,
-        data: course
+        course
     })
 
 });
@@ -93,7 +100,11 @@ const addAnswer = asyncHandler(async (req: Request, res: Response, next: NextFun
 
     if (req.user?._id === question.user._id) {
         // create notification
-
+        await notificationModel.create({
+            userId: req.user?._id,
+            title: "New question reply received",
+            message: `You have a new question reply in ${courseContent?.title}`
+        });
     } else {
         // question reply
         const data = {
@@ -115,7 +126,7 @@ const addAnswer = asyncHandler(async (req: Request, res: Response, next: NextFun
 
     res.status(StatusCodes.OK).json({
         success: true,
-        data: course
+        course
     })
 });
 export const questionController = {
