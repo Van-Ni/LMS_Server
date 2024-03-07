@@ -33,6 +33,7 @@ const addQuestion = asyncHandler(async (req: Request, res: Response, next: NextF
         return next(new ApiError(StatusCodes.NOT_FOUND, "Invalid content id"));
 
     const newQuestion = {
+        // TODO: only feild necessary 
         user: req.user ? req.user : {},
         question,
         questionReplies: []
@@ -90,6 +91,7 @@ const addAnswer = asyncHandler(async (req: Request, res: Response, next: NextFun
 
     // add answer
     const newAnswer = {
+        // TODO: only feild necessary 
         user: req.user ? req.user : {},
         answer,
     } as unknown as IComment;

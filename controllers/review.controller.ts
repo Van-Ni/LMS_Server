@@ -28,6 +28,7 @@ const addReview = asyncHandler(async (req: Request, res: Response, next: NextFun
     const { review, rating } = req.body as IAddReviewData;
 
     const newReview = {
+        // TODO: only feild necessary 
         user: req.user,
         rating,
         comment: review,
@@ -79,6 +80,7 @@ const addReplyToReview = asyncHandler(async (req: Request, res: Response, next: 
         return next(new ApiError(StatusCodes.NOT_FOUND, "Review not found"));
 
     const replyData = {
+        // TODO: only feild necessary 
         user: req.user,
         comment
     } as unknown as { user: User; comment: String };
