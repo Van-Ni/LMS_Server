@@ -4,6 +4,7 @@ import { deleteImage, uploadImage } from "../utils/image";
 import ApiError from "../utils/ApiError";
 import { StatusCodes } from "http-status-codes";
 import { createCourseService, getAllCoursesService, getCourseByUserService, getSingleCourseService, updateCourseService } from "../services/course.service";
+import CourseModel from "../models/course.model";
 
 // #postman : How to add nested arrays and objects in the postman body via form-data
 // https://usamaadev.hashnode.dev/how-to-add-nested-arrays-and-objects-in-the-postman-body-via-form-data
@@ -98,10 +99,31 @@ const getCourseByUser = asyncHandler(async (req: Request, res: Response, next: N
 // =========================
 
 
+// =========================
+// Delete course -- admin
+// =========================
+const deleteCourse = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    // Get course ID from request parameters 
+    const { id } = req.params;
+
+    // Find user by ID and delete
+    const deletedCourse = await CourseModel.findByIdAndDelete(id);
+
+    // Check if user was found and deleted
+    if (!deletedCourse) {
+        res.status(StatusCodes.NOT_FOUND).json({ message: "Course not found" });
+        return;
+    }
+    // TODO: Remove course thumbnail 
+
+    res.status(StatusCodes.OK).json({ success: true, message: "Course deleted successfully" });
+});
+
 export const courseController = {
     uploadCourse,
     editCourse,
     getSingleCourse,
     getAllCourses,
-    getCourseByUser
+    getCourseByUser,
+    deleteCourse
 }
