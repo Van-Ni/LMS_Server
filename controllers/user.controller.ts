@@ -342,6 +342,38 @@ export const updateUserRole = asyncHandler(async (req: express.Request, res: exp
     res.status(StatusCodes.OK).json({ success: true, user });
 });
 
+// ==========================
+// Delete User -- admin
+// ==========================
+export const deleteUser = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    // Get user ID from request parameters 
+    const { id } = req.params;
+
+    // Prevent self-deletion
+    if (req.user?._id.toString() === id) {
+        res.status(StatusCodes.BAD_REQUEST).json({ message: "Cannot delete your own account" });
+        return;
+    }
+
+    // Find user by ID and delete
+    const deletedUser = await userModel.findByIdAndDelete(id);
+
+    // Check if user was found and deleted
+    if (!deletedUser) {
+        res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
+        return;
+    }
+
+    // delete old avatar
+    if (deletedUser.avatar) await deleteImage(deletedUser.avatar.public_id);
+
+    // Clear Redis cache
+    await redis.del(id);
+
+    res.status(StatusCodes.OK).json({ success: true, message: "User deleted successfully" });
+
+});
+
 
 export const userController = {
     registrationUser,
@@ -355,5 +387,6 @@ export const userController = {
     updatePassword,
     updateProfilePicture,
     getAllUsers,
-    updateUserRole
+    updateUserRole,
+    deleteUser
 }

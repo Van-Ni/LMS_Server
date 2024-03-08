@@ -23,6 +23,7 @@ Router.put("/add-answer", isAuthenticated, questionController.addAnswer)
 Router.put("/add-review/:id", isAuthenticated, reviewController.addReview)
 Router.put("/add-reply/:id", isAuthenticated, authorziteRoles("admin"), reviewController.addReplyToReview)
 Router.get("/admin/all-courses", isAuthenticated, authorziteRoles("admin"), courseController.getAllCourses)
+Router.delete("/admin/delete-course/:id", isAuthenticated, authorziteRoles("admin"), courseController.deleteCourse)
 
 
 

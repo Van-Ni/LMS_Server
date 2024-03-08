@@ -21,5 +21,6 @@ Router.put("/update-user-password", isAuthenticated, userController.updatePasswo
 Router.put("/update-user-avatar", isAuthenticated, upload.single("image"), userController.updateProfilePicture)
 Router.get("/all-users", isAuthenticated, authorziteRoles("admin"), userController.getAllUsers)
 Router.put("/update-user-role", isAuthenticated, authorziteRoles("admin"), userController.updateUserRole)
+Router.delete("/delete-user/:id", isAuthenticated, authorziteRoles("admin"), userController.deleteUser)
 
 export const userRoute = Router;
