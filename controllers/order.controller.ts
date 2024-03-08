@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 import { Request, Response, NextFunction } from "express";
 import orderModel, { IOrder } from "../models/order.model";
-import CourseModel from "../models/course.model";
+import CourseModel from "../models/courses/course.model";
 import ApiError from "../utils/ApiError";
 import { StatusCodes } from "http-status-codes";
 import userModel from "../models/user.model";

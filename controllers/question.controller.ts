@@ -1,11 +1,11 @@
 import asyncHandler from "express-async-handler";
 import { Request, Response, NextFunction } from "express";
-import CourseModel from "../models/course.model";
+import CourseModel from "../models/courses/course.model";
 import mongoose from "mongoose";
 import ApiError from "../utils/ApiError";
 import { StatusCodes } from "http-status-codes";
-import { ICourseData } from "../models/courseData.model";
-import { IComment } from "../models/comment.model";
+import { ICourseData } from "../models/courses/courseData.model";
+import { IComment } from "../models/courses/comment.model";
 import sendMail from "../utils/sendMail";
 import notificationModel from "../models/notification.model";
 

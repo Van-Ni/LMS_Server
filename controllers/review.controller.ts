@@ -2,8 +2,8 @@ import asyncHandler from "express-async-handler";
 import { Request, Response, NextFunction } from "express";
 import ApiError from "../utils/ApiError";
 import { StatusCodes } from "http-status-codes";
-import CourseModel from "../models/course.model";
-import { IReview } from "../models/review.model";
+import CourseModel from "../models/courses/course.model";
+import { IReview } from "../models/courses/review.model";
 import { User } from "../models/user.model";
 
 

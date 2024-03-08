@@ -1,5 +1,5 @@
 import { Response, NextFunction } from "express";
-import CourseModel from "../models/course.model";
+import CourseModel from "../models/courses/course.model";
 import { StatusCodes } from "http-status-codes";
 import ApiError from "../utils/ApiError";
 import { redis } from "../utils/redis";

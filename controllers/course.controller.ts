@@ -4,7 +4,7 @@ import { deleteImage, uploadImage } from "../utils/image";
 import ApiError from "../utils/ApiError";
 import { StatusCodes } from "http-status-codes";
 import { createCourseService, getAllCoursesService, getCourseByUserService, getSingleCourseService, updateCourseService } from "../services/course.service";
-import CourseModel from "../models/course.model";
+import CourseModel from "../models/courses/course.model";
 
 // #postman : How to add nested arrays and objects in the postman body via form-data
 // https://usamaadev.hashnode.dev/how-to-add-nested-arrays-and-objects-in-the-postman-body-via-form-data

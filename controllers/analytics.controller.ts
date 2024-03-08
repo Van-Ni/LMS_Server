@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { generateLast12MonthsData } from "../utils/analytics.generator";
 import userModel from "../models/user.model";
 import { StatusCodes } from "http-status-codes";
-import CourseModel from "../models/course.model";
+import CourseModel from "../models/courses/course.model";
 import notificationModel from "../models/notification.model";
 import orderModel from "../models/order.model";
 

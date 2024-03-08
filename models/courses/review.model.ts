@@ -1,6 +1,6 @@
 import { Document, Schema } from "mongoose";
 import { IComment } from "./comment.model";
-import { User } from "./user.model";
+import { User } from "../user.model";
 
 
 
