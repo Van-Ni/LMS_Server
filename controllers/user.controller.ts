@@ -324,6 +324,25 @@ const getAllUsers = asyncHandler(async (req: express.Request, res: express.Respo
     })
 });
 
+// ==========================
+// Update User Role -- admin
+// ==========================
+
+export const updateUserRole = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const { id, role } = req.body;
+
+    const user = await userModel.findByIdAndUpdate(id, {
+        $set: { role },
+    }, { new: true });
+
+    if (!user) {
+        res.status(StatusCodes.NOT_FOUND).json({ success: false, message: 'User not found' });
+    }
+
+    res.status(StatusCodes.OK).json({ success: true, user });
+});
+
+
 export const userController = {
     registrationUser,
     activateUser,
@@ -335,5 +354,6 @@ export const userController = {
     updateUserInfo,
     updatePassword,
     updateProfilePicture,
-    getAllUsers
+    getAllUsers,
+    updateUserRole
 }
