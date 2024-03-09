@@ -33,7 +33,7 @@ export const isAuthenticated = asyncHandler(async (req: Request, res: Response, 
 
     const user = await redis.get(decode.id)
     if (!user)
-        return next(new ApiError(StatusCodes.NOT_FOUND, "User not found."));
+        return next(new ApiError(StatusCodes.BAD_REQUEST, "Please login to access this resource."));
     req.user = JSON.parse(user); // field password
     next();
 })

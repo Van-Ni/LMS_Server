@@ -45,7 +45,9 @@ export const getSingleCourseService = async (id: String, res: Response, next: Ne
             course = await CourseModel
                 .findById(id)
                 .select("-courseData.videoUrl -courseData.link -courseData.suggestion -courseData.questions");
-            await redis.set(id as string, JSON.stringify(course))
+
+            await redis.set(id as string, JSON.stringify(course), "EX", 604800) // 7 days
+            
             if (!course) {
                 return res.status(StatusCodes.NOT_FOUND).json({ success: false, message: 'Course not found' });
             }
