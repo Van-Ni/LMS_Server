@@ -155,7 +155,7 @@ export const updateAccessToken = asyncHandler(async (req: express.Request, res: 
 
     const session = await redis.get(decoded.id as string);
     if (!session)
-        return next(new ApiError(StatusCodes.BAD_REQUEST, message));
+        return next(new ApiError(StatusCodes.BAD_REQUEST, "Please login to access this resource."));
 
     const user = JSON.parse(session);
 
@@ -167,6 +167,8 @@ export const updateAccessToken = asyncHandler(async (req: express.Request, res: 
     const refreshToken = jwt.sign({ id: user._id }, env.REFRESH_TOKEN as Secret || "", {
         expiresIn: "3d"
     })
+
+    await redis.set(user._id, JSON.stringify(user), "EX", 604800);
 
     res.cookie("access_token", accessToken, accessTokenOptions)
     res.cookie("refresh_token", refreshToken, refreshTokenOptions)
