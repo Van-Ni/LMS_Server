@@ -40,10 +40,11 @@ const editCourse = asyncHandler(async (req: Request, res: Response, next: NextFu
     const courseId = req.params.id;
     const imageFile = req.file as Express.Multer.File;
 
-    const existingThumbnail = data.thumbnail;
+    const existingThumbnail = await CourseModel.findById(courseId).select("thumbnail");
     // Handle image deletion (if any)
-    if (imageFile && existingThumbnail) {
-        await deleteImage(existingThumbnail.public_id);
+    if (imageFile && existingThumbnail?.thumbnail) {
+        const thumbnailObject = existingThumbnail.thumbnail as unknown as { public_id: string };
+        await deleteImage(thumbnailObject.public_id);
     }
 
     // Handle image upload (if any)
