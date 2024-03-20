@@ -162,13 +162,13 @@ export const updateAccessToken = asyncHandler(async (req: express.Request, res: 
     req.user = user;
 
     const accessToken = jwt.sign({ id: user._id }, env.ACCESS_TOKEN as Secret || "", {
-        expiresIn: "5m"
+        expiresIn: "5h"
     })
     const refreshToken = jwt.sign({ id: user._id }, env.REFRESH_TOKEN as Secret || "", {
         expiresIn: "3d"
     })
 
-    await redis.set(user._id, JSON.stringify(user), "EX", 604800);
+    await redis.set(user._id, JSON.stringify(user), "EX", 604800); // 7 days
 
     res.cookie("access_token", accessToken, accessTokenOptions)
     res.cookie("refresh_token", refreshToken, refreshTokenOptions)
@@ -212,23 +212,15 @@ const socialAuth = asyncHandler(async (req: express.Request, res: express.Respon
 // ==========================
 interface IUpdateInfo {
     name?: string;
-    email?: string;
 }
 const updateUserInfo = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const { name, email } = req.body as IUpdateInfo;
+    const { name } = req.body as IUpdateInfo;
 
     const userId = req.user?._id;
     const user = await userModel.findById(userId);
 
     if (!user)
         return next(new ApiError(StatusCodes.NOT_FOUND, "User not found"));
-
-    if (email && user) {
-        const isEmailExist = await userModel.findOne({ email });
-        if (isEmailExist)
-            return next(new ApiError(StatusCodes.BAD_REQUEST, "Email already exists"));
-        user.email = email;
-    }
 
     if (name && user)
         user.name = name;
@@ -331,9 +323,9 @@ const getAllUsers = asyncHandler(async (req: express.Request, res: express.Respo
 // ==========================
 
 export const updateUserRole = asyncHandler(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const { id, role } = req.body;
+    const { email, role } = req.body;
 
-    const user = await userModel.findByIdAndUpdate(id, {
+    const user = await userModel.findByIdAndUpdate(email, {
         $set: { role },
     }, { new: true });
 

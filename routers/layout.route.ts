@@ -7,6 +7,6 @@ const Router = express.Router();
 
 Router.post("/create-layout", isAuthenticated, authorziteRoles("admin"), upload.single("image"), layoutController.createLayout)
 Router.put("/update-layout", isAuthenticated, authorziteRoles("admin"), upload.single("image"), layoutController.updateLayout)
-Router.get("/get-layout", layoutController.getLayout)
+Router.get("/get-layout/:type", layoutController.getLayout)
 
 export const layoutRoute = Router;

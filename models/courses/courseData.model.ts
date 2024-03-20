@@ -10,7 +10,7 @@ export interface ICourseData extends Document {
     videoSection: string;
     videoLength: number;
     videoPlayer: string;
-    link: ILink[];
+    links: ILink[];
     suggestion: string;
     questions: IComment[]
 }
@@ -23,7 +23,7 @@ export const courseDataScheme = new Schema<ICourseData>({
     description: String,
     videoLength: Number,
     videoPlayer: String,
-    link: [linkScheme],
+    links: [linkScheme],
     suggestion: String,
     questions: [commentScheme]
 })

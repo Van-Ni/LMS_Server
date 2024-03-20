@@ -25,6 +25,6 @@ Router.put("/add-reply/:id", isAuthenticated, authorziteRoles("admin"), reviewCo
 Router.get("/admin/all-courses", isAuthenticated, authorziteRoles("admin"), courseController.getAllCourses)
 Router.delete("/admin/delete-course/:id", isAuthenticated, authorziteRoles("admin"), courseController.deleteCourse)
 
-
+Router.post("/vdoCipher/getOTP", courseController.generateVideoUrl)
 
 export const courseRoute = Router;

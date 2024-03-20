@@ -19,7 +19,7 @@ export const createCourseService = async (data: any, res: Response, next: NextFu
 export const updateCourseService = async (id: String, data: any, res: Response, next: NextFunction) => {
     try {
         console.log("hello");
-        
+
         const course = await CourseModel.findByIdAndUpdate(id, { $set: data }, { $new: true, $returnDocument: "after" });
         if (!course) {
             return res.status(StatusCodes.NOT_FOUND).json({ success: false, message: 'Course not found' });
@@ -47,7 +47,7 @@ export const getSingleCourseService = async (id: String, res: Response, next: Ne
                 .select("-courseData.videoUrl -courseData.link -courseData.suggestion -courseData.questions");
 
             await redis.set(id as string, JSON.stringify(course), "EX", 604800) // 7 days
-            
+
             if (!course) {
                 return res.status(StatusCodes.NOT_FOUND).json({ success: false, message: 'Course not found' });
             }
@@ -64,15 +64,35 @@ export const getSingleCourseService = async (id: String, res: Response, next: Ne
 export const getAllCoursesService = async (res: Response, next: NextFunction) => {
     try {
         let courses = null;
-        const isCacheExist = await redis.get("allCourses");
-        if (isCacheExist) {
-            courses = await JSON.parse(isCacheExist)
-        } else {
-            courses = await CourseModel
-                .find()
-                .select("-courseData.videoUrl -courseData.link -courseData.suggestion -courseData.questions");
-            await redis.set("allCourses", JSON.stringify(courses));
-        }
+        // const isCacheExist = await redis.get("allCourses");
+        // if (isCacheExist) {
+        //     courses = await JSON.parse(isCacheExist)
+        // } else {
+        // }
+        courses = await CourseModel
+            .find()
+            .select("-courseData.videoUrl -courseData.link -courseData.suggestion -courseData.questions");
+        // await redis.set("allCourses", JSON.stringify(courses));
+        res.status(StatusCodes.CREATED).json({
+            success: true,
+            courses
+        })
+    } catch (error: any) {
+        return next(new ApiError(StatusCodes.BAD_REQUEST, error.message));
+    }
+};
+
+export const getAllCoursesAdminService = async (res: Response, next: NextFunction) => {
+    try {
+        let courses = null;
+        // const isCacheExist = await redis.get("allCourses");
+        // if (isCacheExist) {
+        //     courses = await JSON.parse(isCacheExist)
+        // } else {
+        // }
+        courses = await CourseModel
+            .find();
+        // await redis.set("allCourses", JSON.stringify(courses));
         res.status(StatusCodes.CREATED).json({
             success: true,
             courses

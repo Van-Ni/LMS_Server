@@ -6,7 +6,7 @@ interface ICourse extends Document {
     name: string;
     description: string;
     price: number;
-    estimatePrice?: number;
+    estimatedPrice?: number;
     thumbnail: string;
     tags: string;
     level: string;
@@ -32,7 +32,7 @@ const courseSchema = new Schema<ICourse>({
         type: Number,
         required: true
     },
-    estimatePrice: Number,
+    estimatedPrice: Number,
     thumbnail: {
         public_id: {
             type: String,
@@ -75,6 +75,15 @@ const courseSchema = new Schema<ICourse>({
     }
 }, { timestamps: true })
 
+// Duplicate the ID field.
+courseSchema.virtual('id').get(function(){
+    return this._id.toHexString();
+});
+
+// Ensure virtual fields are serialised.
+courseSchema.set('toJSON', {
+    virtuals: true
+});
 export const CourseModel: Model<ICourse> = mongoose.model("Course", courseSchema);
 
 export default CourseModel;

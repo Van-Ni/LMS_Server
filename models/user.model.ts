@@ -74,7 +74,7 @@ userSchema.pre('save', async function (next) {
 userSchema.methods.signAccessToken = function () {
     const user = this as User;
     return jwt.sign({ id: user._id }, env.ACCESS_TOKEN as Secret || "", {
-        expiresIn: "5m"
+        expiresIn: "5h"
     })
 }
 
@@ -98,6 +98,15 @@ userSchema.methods.comparePassword = async function (enteredPassword: string): P
         return await bcrypt.compare(enteredPassword, user.password);
 };
 
+// Duplicate the ID field.
+userSchema.virtual('id').get(function(){
+    return this._id.toHexString();
+});
+
+// Ensure virtual fields are serialised.
+userSchema.set('toJSON', {
+    virtuals: true
+});
 const userModel = model<User>('User', userSchema);
 
 export default userModel

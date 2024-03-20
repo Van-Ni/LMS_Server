@@ -21,13 +21,11 @@ declare global {
 export const isAuthenticated = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 
     const access_token = req.cookies.access_token as string;
-    console.log('🚀 ~ isAuthenticated ~ req.cookies:', req.cookies)
 
     if (!access_token)
         return next(new ApiError(StatusCodes.BAD_REQUEST, "Please login to access this resource."));
 
     const decode = jwt.verify(access_token, env.ACCESS_TOKEN as Secret) as JwtPayload;
-    console.log('🚀 ~ isAuthenticated ~ decode:', decode)
     if (!decode)
         return next(new ApiError(StatusCodes.BAD_REQUEST, "Access token is not valid."));
 

@@ -3,9 +3,9 @@ import { Request, Response, NextFunction } from "express";
 import { deleteImage, uploadImage } from "../utils/image";
 import ApiError from "../utils/ApiError";
 import { StatusCodes } from "http-status-codes";
-import { createCourseService, getAllCoursesService, getCourseByUserService, getSingleCourseService, updateCourseService } from "../services/course.service";
+import { createCourseService, getAllCoursesAdminService, getAllCoursesService, getCourseByUserService, getSingleCourseService, updateCourseService } from "../services/course.service";
 import CourseModel from "../models/courses/course.model";
-
+import axios from "axios";
 // #postman : How to add nested arrays and objects in the postman body via form-data
 // https://usamaadev.hashnode.dev/how-to-add-nested-arrays-and-objects-in-the-postman-body-via-form-data
 
@@ -76,7 +76,7 @@ const getSingleCourse = asyncHandler(async (req: Request, res: Response, next: N
 // Get all courses
 // =========================
 const getAllCourses = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    await getAllCoursesService(res, next);
+    await getAllCoursesAdminService(res, next);
 });
 
 // =========================
@@ -120,11 +120,29 @@ const deleteCourse = asyncHandler(async (req: Request, res: Response, next: Next
     res.status(StatusCodes.OK).json({ success: true, message: "Course deleted successfully" });
 });
 
+export const generateVideoUrl = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const { videoId } = req.body; // Assuming the videoId is provided in the request body
+    const response = await axios.post(
+        `https://dev.vdocipher.com/api/videos/${videoId}/otp`,
+        { ttl: 300 }, // Assuming ttl is provided in seconds
+        {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Apisecret ${process.env.VDOCIPHER_API_SCERET}` // Assuming you have an API secret stored in process.env.API_SECRET
+            }
+        }
+    );
+    res.json(response.data);
+
+});
+
 export const courseController = {
     uploadCourse,
     editCourse,
     getSingleCourse,
     getAllCourses,
     getCourseByUser,
-    deleteCourse
+    deleteCourse,
+    generateVideoUrl
 }

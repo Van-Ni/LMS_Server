@@ -112,7 +112,7 @@ const updateLayout = asyncHandler(async (req: Request, res: Response, next: Next
 });
 
 const getLayout = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const { type } = req.body;
+    const { type } = req.params;
     console.log('🚀 ~ getLayout ~ type:', type)
 
     const layout = await layoutModel.findOne({
